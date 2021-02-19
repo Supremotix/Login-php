@@ -1,23 +1,63 @@
 <?php
+
+//Esto es una prueba aaaas
 require_once("conexion.php");
 
+//lOGIN
+
+if (!empty($_POST)) {
+	$usuario = mysqli_real_escape_string($conexion, $_POST['user']);
+	$password = mysqli_real_escape_string($conexion, $_POST['pass']);
+	$password_encriptada =sha1($password);
+	$consulta= "SELECT idusuarios from usuarios WHERE usuario ='$usuario' and password='$password'";
+	$resultado= $conexion->query($consulta);
+	$rows=$resultado->num_rows;
+	if ($rows>0) {
+		$row = $resultado->fetch_assoc();
+		$_SESSION['id_usuario']= $row['idusuarios'];
+
+		# code...
+	}
+
+}
+
+
 //Registrar usuario
-if (isset($_POST["Registrar"])) {
+if (isset($_POST["registrar"])) {
 	$nombre = mysqli_real_escape_string($conexion, $_POST['nombre']);
 	$correo = mysqli_real_escape_string($conexion, $_POST['correo']);
 	$usuario = mysqli_real_escape_string($conexion, $_POST['user']);
 	$password = mysqli_real_escape_string($conexion, $_POST['pass']);
 	$password_encriptada = sha1($password);
-	$sqluser = "SELECT idusuarios from usuarios WHERE usuario ='$usuario'";
-	$resultadouser = $conexion->query($sqluser);
+	$verificar = "SELECT idusuarioS FROM usuarios WHERE usuario= '$usuario'";
+	$resultadouser = $conexion->query($verificar);
 	$filas = $resultadouser->num_rows;
 	if ($filas > 0) {
-		echo "<script> alert('El usuario ya existe');
-		windows.location = 'index.php';
-		</script>";
-	}else {
+		echo "
+		<script> 
+		alert('El usuario ya existe');
+		window.location = 'index.php';
+		</script>
+		";
+	} else {
 		// insertar inforamcion
-		$sqlusuario= "INSERT INTO usuarios(Nombre,Correo,Usuario,Password) values ('$nombre','$correo',$usuario,$password_encriptada)"
+		$sqlusuario = "INSERT INTO usuarios(Nombre,Correo,Usuario,Password)
+		VALUES ('$nombre','$correo','$usuario','$password_encriptada')";
+		$resultadousuario = $conexion->query($sqlusuario);
+		if ($resultadousuario > 0) {
+			echo "
+			<script> 
+			alert('Registro Exitoso');
+			window.location = 'index.php';
+			</script>
+			";
+		} else {
+			echo "<script> 
+			alert('Error al registrarse');
+			window.location = 'index.php';
+			</script>
+			";
+		}
 	}
 }
 
