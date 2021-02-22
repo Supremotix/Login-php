@@ -3,22 +3,37 @@
 //Esto es una prueba aaaas
 require_once("conexion.php");
 
+session_start();
+
+if (isset($_SESSION['id_usuario'])) {
+	header("Location : admin.php");
+}
 //lOGIN
 
-if (!empty($_POST)) {
+//if (!empty($_POST)) {
+
+if (isset($_POST["Ingresar"])) {
+	# code...
+
 	$usuario = mysqli_real_escape_string($conexion, $_POST['user']);
 	$password = mysqli_real_escape_string($conexion, $_POST['pass']);
-	$password_encriptada =sha1($password);
-	$consulta= "SELECT idusuarios from usuarios WHERE usuario ='$usuario' and password='$password'";
-	$resultado= $conexion->query($consulta);
-	$rows=$resultado->num_rows;
-	if ($rows>0) {
+	$password_encriptada = sha1($password);
+	$consulta = "SELECT idusuarios from usuarios 
+				wHERE usuario ='$usuario' and password='$password_encriptada'";
+	$resultado = $conexion->query($consulta);
+	$rows = $resultado->num_rows;
+	if ($rows > 0) {
 		$row = $resultado->fetch_assoc();
-		$_SESSION['id_usuario']= $row['idusuarios'];
-
-		# code...
+		$_SESSION['id_usuario'] = $row['idusuarios'];
+		header("Location: admin.php ");
+	} else {
+		echo "
+		<script> 
+		alert('Usuario o contraseña incorrecto');
+		window.location = 'index.php';
+		</script>
+		";
 	}
-
 }
 
 
@@ -29,7 +44,7 @@ if (isset($_POST["registrar"])) {
 	$usuario = mysqli_real_escape_string($conexion, $_POST['user']);
 	$password = mysqli_real_escape_string($conexion, $_POST['pass']);
 	$password_encriptada = sha1($password);
-	$verificar = "SELECT idusuarioS FROM usuarios WHERE usuario= '$usuario'";
+	$verificar = "SELECT idusuarios FROM usuarios WHERE usuario= '$usuario'";
 	$resultadouser = $conexion->query($verificar);
 	$filas = $resultadouser->num_rows;
 	if ($filas > 0) {
@@ -153,7 +168,7 @@ if (isset($_POST["registrar"])) {
 														<span class="lbl"> Recordarme</span>
 													</label>
 
-													<button type="submit" class="width-35 pull-right btn btn-sm btn-primary">
+													<button type="submit" name="Ingresar" class="width-35 pull-right btn btn-sm btn-primary">
 														<i class="ace-icon fa fa-key"></i>
 														<span class="bigger-110">Ingresar</span>
 													</button>
